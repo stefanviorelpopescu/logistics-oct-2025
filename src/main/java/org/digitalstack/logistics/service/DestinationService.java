@@ -4,7 +4,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.digitalstack.logistics.dto.AddDestinationDto;
-import org.digitalstack.logistics.dto.DestinationConverter;
+import org.digitalstack.logistics.dto.converter.DestinationConverter;
 import org.digitalstack.logistics.dto.DestinationDto;
 import org.digitalstack.logistics.entity.Destination;
 import org.digitalstack.logistics.repository.DestinationRepository;

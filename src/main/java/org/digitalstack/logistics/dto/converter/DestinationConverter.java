@@ -1,5 +1,6 @@
-package org.digitalstack.logistics.dto;
+package org.digitalstack.logistics.dto.converter;
 
+import org.digitalstack.logistics.dto.DestinationDto;
 import org.digitalstack.logistics.entity.Destination;
 
 public class DestinationConverter {
