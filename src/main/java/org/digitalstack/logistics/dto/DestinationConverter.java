@@ -12,4 +12,12 @@ public class DestinationConverter {
                 .build();
     }
 
+    public static Destination dtoToModel(DestinationDto destinationDto) {
+        return Destination.builder()
+                .id(destinationDto.id())
+                .name(destinationDto.name())
+                .distance(destinationDto.distance())
+                .build();
+    }
+
 }

@@ -2,6 +2,8 @@ package org.digitalstack.logistics.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 
@@ -20,7 +22,8 @@ public class Order {
 
     private Long lastUpdated;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "destination_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Destination destination;
 }
