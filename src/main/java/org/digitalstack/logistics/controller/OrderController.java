@@ -23,4 +23,11 @@ public class OrderController {
                                     @RequestParam(required = false, defaultValue = "#{applicationData.getCurrentDate()}") LocalDate date) {
         return orderService.getOrders(destinationName, date);
     }
+
+    @PostMapping("/cancel")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<OrderDto> cancelOrders(@RequestBody List<Long> orderIds) {
+        return orderService.cancelOrders(orderIds);
+    }
 }
