@@ -1,6 +1,7 @@
 package org.digitalstack.logistics.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.digitalstack.logistics.dto.AddOrderDto;
 import org.digitalstack.logistics.dto.OrderDto;
 import org.digitalstack.logistics.service.OrderService;
 import org.springframework.http.HttpStatus;
@@ -29,5 +30,12 @@ public class OrderController {
     @ResponseBody
     public List<OrderDto> cancelOrders(@RequestBody List<Long> orderIds) {
         return orderService.cancelOrders(orderIds);
+    }
+
+    @PostMapping("/add")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public List<OrderDto> addOrders(@RequestBody List<AddOrderDto> orderData) {
+        return orderService.addOrders(orderData);
     }
 }
