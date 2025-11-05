@@ -6,12 +6,14 @@ import org.digitalstack.logistics.config.ApplicationData;
 import org.digitalstack.logistics.entity.Destination;
 import org.digitalstack.logistics.entity.Order;
 import org.digitalstack.logistics.repository.OrderRepository;
+import org.digitalstack.logistics.service.exception.DayNotOverException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,14 +23,24 @@ public class ShippingService {
 
     private final ApplicationData applicationData;
     private final OrderRepository orderRepository;
-//    private final Executor deliveryExecutor;
+    private final Executor deliveryExecutor;
     private final DeliveryManager deliveryManager;
 
-    public String newDay() {
+    public String newDay() throws DayNotOverException {
+        if (((ThreadPoolExecutor)deliveryExecutor).getActiveCount() > 0) {
+            throw new DayNotOverException("Previous day deliveries are not yet completed");
+        }
+
         LocalDate currentDate = applicationData.incrementAndGetDate();
+        log.info("New day starting - {}", currentDate);
 
         Map<Destination, List<Long>> ordersByDestination = orderRepository.findAllByDeliveryDate(currentDate).stream()
                 .collect(Collectors.groupingBy(Order::getDestination, Collectors.mapping(Order::getId, Collectors.toList())));
+
+        String destinationList = ordersByDestination.keySet().stream()
+                .map(Destination::getName)
+                        .collect(Collectors.joining(", "));
+        log.info("Today we will be delivering to {}", destinationList);
 
         //start delivering
 //        ordersByDestination.forEach((destination, orderList) ->

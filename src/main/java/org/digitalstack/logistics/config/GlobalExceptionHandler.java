@@ -2,6 +2,7 @@ package org.digitalstack.logistics.config;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.digitalstack.logistics.service.exception.DayNotOverException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,10 +22,10 @@ public class GlobalExceptionHandler {
     public void handleEntityNotFoundException() {
     }
 
-    @ExceptionHandler(EntityExistsException.class)
+    @ExceptionHandler({EntityExistsException.class, DayNotOverException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public String handleEntityNotFoundException(EntityExistsException e) {
+    public String handleEntityNotFoundException(Exception e) {
         return e.getMessage();
     }
 

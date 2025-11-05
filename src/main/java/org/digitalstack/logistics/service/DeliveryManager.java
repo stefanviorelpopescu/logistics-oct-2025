@@ -10,7 +10,6 @@ import org.digitalstack.logistics.entity.OrderStatus;
 import org.digitalstack.logistics.repository.OrderRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,8 +24,8 @@ public class DeliveryManager {
     @SneakyThrows
     @Async("deliveryExecutor")
     public void deliver(Destination destination, List<Long> orderIdsToDeliver) {
-        log.info("Delivering to {}", destination.getName());
 
+        log.info("Starting deliveries on thread {} for {} for {} km", Thread.currentThread().getName(), destination.getName(), destination.getDistance());
         List<Long> deliveringOrderIds = orderRepository.changeOrdersStatus(orderIdsToDeliver, OrderStatus.DELIVERING).stream()
                 .map(Order::getId)
                 .toList();
@@ -34,7 +33,7 @@ public class DeliveryManager {
         Thread.sleep(destination.getDistance() * 1000);
 
         List<Order> deliveredOrders = orderRepository.changeOrdersStatus(deliveringOrderIds, OrderStatus.DELIVERED);
-
         applicationData.incrementProfit((long) deliveredOrders.size() * destination.getDistance());
+        log.info("{} deliveries completed for {}", deliveredOrders.size(), destination.getName());
     }
 }

@@ -2,6 +2,7 @@ package org.digitalstack.logistics.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.digitalstack.logistics.service.ShippingService;
+import org.digitalstack.logistics.service.exception.DayNotOverException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class ShippingController {
     @PostMapping("/new-day")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
-    public String newDay() {
+    public String newDay() throws DayNotOverException {
         return shippingService.newDay();
     }
 
