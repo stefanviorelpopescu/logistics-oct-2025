@@ -1,13 +1,11 @@
 package org.digitalstack.logistics.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.digitalstack.logistics.config.ApplicationData;
 import org.digitalstack.logistics.entity.Destination;
 import org.digitalstack.logistics.entity.Order;
 import org.digitalstack.logistics.repository.OrderRepository;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,27 +21,22 @@ public class ShippingService {
 
     private final ApplicationData applicationData;
     private final OrderRepository orderRepository;
-    private final Executor deliveryExecutor;
+//    private final Executor deliveryExecutor;
+    private final DeliveryManager deliveryManager;
 
     public String newDay() {
         LocalDate currentDate = applicationData.incrementAndGetDate();
 
-        Map<Destination, List<Order>> ordersByDestination = orderRepository.findAllByDeliveryDate(currentDate).stream()
-                .collect(Collectors.groupingBy(Order::getDestination));
+        Map<Destination, List<Long>> ordersByDestination = orderRepository.findAllByDeliveryDate(currentDate).stream()
+                .collect(Collectors.groupingBy(Order::getDestination, Collectors.mapping(Order::getId, Collectors.toList())));
 
         //start delivering
 //        ordersByDestination.forEach((destination, orderList) ->
-//                deliveryExecutor.execute(new DeliveryRunnable(destination, orderList)));
+//                deliveryExecutor.execute(new DeliveryRunnable(destination, orderList, orderRepository)));
 
-        ordersByDestination.forEach(this::deliver);
+        ordersByDestination.forEach(deliveryManager::deliver);
 
         return String.format("New day started: %s", currentDate);
     }
 
-    @SneakyThrows
-    @Async("deliveryExecutor")
-    private void deliver(Destination destination, List<Order> orders) {
-        log.info("Delivering to {}", destination.getName());
-        Thread.sleep(destination.getDistance() * 1000);
-    }
 }

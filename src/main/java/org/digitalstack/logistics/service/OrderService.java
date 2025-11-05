@@ -10,6 +10,7 @@ import org.digitalstack.logistics.entity.OrderStatus;
 import org.digitalstack.logistics.repository.DestinationRepository;
 import org.digitalstack.logistics.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,16 +29,9 @@ public class OrderService {
         return OrderConverter.modelListToDtoList(orders);
     }
 
+    @Transactional
     public List<OrderDto> cancelOrders(List<Long> orderIds) {
-        List<Order> ordersToCancel = orderRepository.findAllById(orderIds);
-        List<Order> ordersToSave = new ArrayList<>();
-        ordersToCancel.stream()
-                .filter(order -> !order.getStatus().equals(OrderStatus.DELIVERED) && !order.getStatus().equals(OrderStatus.CANCELED))
-                .forEach(order -> {
-                    order.setStatus(OrderStatus.CANCELED);
-                    ordersToSave.add(order);
-                });
-        List<Order> savedOrders = orderRepository.saveAll(ordersToSave);
+        List<Order> savedOrders = orderRepository.changeOrdersStatus(orderIds, OrderStatus.CANCELED);
         return OrderConverter.modelListToDtoList(savedOrders);
     }
 
