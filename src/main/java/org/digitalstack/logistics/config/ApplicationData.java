@@ -9,6 +9,11 @@ import java.time.LocalDate;
 @Getter
 public class ApplicationData {
 
-    private final LocalDate currentDate = LocalDate.of(2021, 12, 15);
+    private LocalDate currentDate = LocalDate.of(2021, 12, 15);
+
+    public LocalDate incrementAndGetDate() {
+        currentDate = currentDate.plusDays(1);
+        return currentDate;
+    }
 
 }

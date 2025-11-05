@@ -10,4 +10,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findAllByDestination_nameContainingIgnoreCaseAndDeliveryDate(String destinationName, LocalDate date);
 
+    List<Order> findAllByDeliveryDate(LocalDate deliveryDate);
 }
