@@ -1,13 +1,13 @@
 package org.digitalstack.logistics.service;
 
 import lombok.RequiredArgsConstructor;
+import org.digitalstack.logistics.cache.DestinationCache;
 import org.digitalstack.logistics.config.ApplicationData;
 import org.digitalstack.logistics.dto.AddOrderDto;
 import org.digitalstack.logistics.dto.OrderDto;
 import org.digitalstack.logistics.dto.converter.OrderConverter;
 import org.digitalstack.logistics.entity.Order;
 import org.digitalstack.logistics.entity.OrderStatus;
-import org.digitalstack.logistics.repository.DestinationRepository;
 import org.digitalstack.logistics.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ public class OrderService {
 
     private final ApplicationData applicationData;
     private final OrderRepository orderRepository;
-    private final DestinationRepository destinationRepository;
+    private final DestinationCache destinationCache;
 
     public List<OrderDto> getOrders(String destinationName, LocalDate date) {
         List<Order> orders = orderRepository.findAllByDestination_nameContainingIgnoreCaseAndDeliveryDate(destinationName, date);
@@ -44,7 +44,7 @@ public class OrderService {
                         Order.builder()
                                 .status(OrderStatus.NEW)
                                 .deliveryDate(orderDatum.deliveryDate())
-                                .destination(destinationRepository.getReferenceById(orderDatum.destinationId()))
+                                .destination(destinationCache.getDestination(orderDatum.destinationId()))
                                 .lastUpdated(currentTime)
                                 .build()
                 ));

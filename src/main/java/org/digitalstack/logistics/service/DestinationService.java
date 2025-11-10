@@ -3,6 +3,7 @@ package org.digitalstack.logistics.service;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.digitalstack.logistics.cache.DestinationCache;
 import org.digitalstack.logistics.dto.AddDestinationDto;
 import org.digitalstack.logistics.dto.converter.DestinationConverter;
 import org.digitalstack.logistics.dto.DestinationDto;
@@ -18,24 +19,26 @@ import java.util.Optional;
 public class DestinationService {
 
     private final DestinationRepository destinationRepository;
+    private final DestinationCache destinationCache;
 
     public List<DestinationDto> getAllDestinations() {
-        return destinationRepository.findAll().stream()
+        return destinationCache.getAllDestinations().stream()
                         .map(DestinationConverter::modelToDto)
                         .toList();
     }
 
     public DestinationDto getById(Long id) {
-        return DestinationConverter.modelToDto(destinationRepository.getReferenceById(id));
+        return DestinationConverter.modelToDto(destinationCache.getDestination(id));
     }
 
     public void deleteById(Long id) {
         destinationRepository.deleteById(id);
+        destinationCache.deleteById(id);
     }
 
     public DestinationDto addDestination(AddDestinationDto request) {
 
-        Optional<Destination> existingDestination = destinationRepository.findByName(request.name());
+        Optional<Destination> existingDestination = destinationCache.getDestinationByName(request.name());
         if (existingDestination.isPresent()) {
             throw new EntityExistsException(String.format("Destination with name %s already exists!", request.name()));
         }
@@ -45,17 +48,19 @@ public class DestinationService {
                 .distance(request.distance())
                 .build();
         Destination savedDestination = destinationRepository.save(destination);
+        destinationCache.addDestination(savedDestination);
         return DestinationConverter.modelToDto(savedDestination);
     }
 
     public DestinationDto editDestination(DestinationDto request) {
-        destinationRepository.findById(request.id())
+        destinationCache.getOptionalDestination(request.id())
                 .orElseThrow(EntityNotFoundException::new);
-        destinationRepository.findByName(request.name())
+        destinationCache.getDestinationByName(request.name())
                 .ifPresent(destination -> checkDestinationNameIsNotInUse(request, destination));
 
         Destination toBeSaved = DestinationConverter.dtoToModel(request);
         Destination savedDestination = destinationRepository.save(toBeSaved);
+        destinationCache.updateDestination(savedDestination);
         return DestinationConverter.modelToDto(savedDestination);
     }
 
