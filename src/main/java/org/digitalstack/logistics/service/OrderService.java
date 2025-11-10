@@ -44,7 +44,7 @@ public class OrderService {
                         Order.builder()
                                 .status(OrderStatus.NEW)
                                 .deliveryDate(orderDatum.deliveryDate())
-                                .destination(destinationRepository.getReferenceById(orderDatum.destinationId()))
+                                .destination(destinationRepository.getDestinationById(orderDatum.destinationId()))
                                 .lastUpdated(currentTime)
                                 .build()
                 ));

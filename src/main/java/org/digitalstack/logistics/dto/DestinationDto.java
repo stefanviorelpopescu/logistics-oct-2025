@@ -1,5 +1,6 @@
 package org.digitalstack.logistics.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,6 +16,7 @@ public record DestinationDto(
         @Min (value = 1, message = "Distance should be > 0!")
         Integer distance) {
 
+        @JsonIgnore
         @AssertTrue (message = "Name should be longer than distance")
         public boolean isNameValid() {
                 return name.length() > distance;
