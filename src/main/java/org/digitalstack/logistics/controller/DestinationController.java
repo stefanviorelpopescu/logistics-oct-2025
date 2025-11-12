@@ -1,5 +1,10 @@
 package org.digitalstack.logistics.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.digitalstack.logistics.dto.AddDestinationDto;
 import org.digitalstack.logistics.dto.DestinationDto;
@@ -24,6 +29,14 @@ public class DestinationController {
         return destinationService.getAllDestinations();
     }
 
+    @Operation(summary = "Get a destination by id", description = "Returns a destination as per the id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved",
+                        content = {@Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = DestinationDto.class)
+                                            )}),
+            @ApiResponse(responseCode = "404", description = "Not found - The destination was not found")
+    })
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody

@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({EntityExistsException.class, DayNotOverException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public String handleEntityNotFoundException(Exception e) {
+    public String handleEntityExistsException(Exception e) {
         return e.getMessage();
     }
 
